@@ -9,6 +9,8 @@ import com.milaboratory.core.tree.TreeSearchParameters;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,17 +27,24 @@ public class Task2 {
         //Create index
         SequenceTreeMap<AminoAcidSequence, Clonotype> stm = new SequenceTreeMap(AminoAcidSequence.ALPHABET);
 
+        ArrayList<Clonotype> clonotypes = new ArrayList<>();
+
         for (Clonotype clonotype : sample) {
-            // Getting clonotype CDR3 sequence
+
 
             if (clonotype.isCoding()) { // ensure CDR3 sequence can be translated (!)
 
                 // Update index
                 stm.put(clonotype.getCdr3aaBinary(), clonotype);
+               // System.out.println(stm.get(clonotype.getCdr3aaBinary()).getCdr3aa());
+                clonotypes.add(clonotype);
 
             }
 
         }
+
+
+
 
 
 
@@ -50,22 +59,19 @@ public class Task2 {
 
         for (Clonotype clonotype : stm.values()){
 
-            NeighborhoodIterator ni = stm.getNeighborhoodIterator(clonotype.getCdr3aaBinary(), treeSearchParameters);
-            int neighborsize = ni.toList().size();
-
-            System.out.println(neighborsize);
-
-            while (neighborsize !=0) { // iterate over matches
-
+                NeighborhoodIterator ni = stm.getNeighborhoodIterator(clonotype.getCdr3aaBinary(), treeSearchParameters);
                 Clonotype c = (Clonotype) ni.next();
 
-                if(c != null)
-                printer.write(clonotype.getCdr3aa() + "->" +  c.getCdr3nt()  + "\t\n");
+                while (c != null) {
 
-                printer.flush();
+                    printer.write(clonotype.getCdr3aa() + " " + c.getCdr3aaBinary()+ "\t\n");
+                    printer.flush();
 
-                --neighborsize;
-            }
+                    c = (Clonotype) ni.next();
+
+
+                }
+
         }
 
 
