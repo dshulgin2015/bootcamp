@@ -60,12 +60,10 @@ public class Task3 {
 
         //computing the graph
 
-        Map<Set<String>,Set<String>> mutGraph = new HashMap<>();
-
         ArrayList<Pair<Set<String>, Set<String>>> pairs = new ArrayList<>();
 
 
-
+        System.out.println(mutations.size());
 
 
         while (it.hasNext()){
@@ -84,7 +82,6 @@ public class Task3 {
                 if(setS1.size() < setS2.size()){
                     setS1tpm.removeAll(setS2);
                     if (setS1tpm.isEmpty())
-                        mutGraph.put(setS1, setS2);
                         pairs.add(new Pair<Set<String>, Set<String>>(setS1,setS2));
                 }
 
@@ -93,28 +90,34 @@ public class Task3 {
             }
         }
 
-        //Adding intersectionts m# to graph
-
-        Set<Set<String>> list1 = new HashSet<>();
-        Set<Set<String>> list2 = new HashSet<>(mutGraph.keySet());
-        list2.removeAll(list1);
-        System.out.println(mutGraph.size());
+        //getting smallest mutation sets
         System.out.println(pairs.size());
 
-        mutGraph.clear();
+        Set<Set<String>> inner = new HashSet<>();
+        Set<Set<String>> other = new HashSet<>();
+        for (Pair<Set<String>, Set<String>> pair:pairs
+                ) {
+
+            inner.add(pair.getFirst());
+
+        }
+        //inner.removeAll(other); // only good mutations sets
+
+        System.out.println(inner.size());
 
 
-        for (Set<String> x:list2
+        //Adding intersectionts m# to graph
+        for (Set<String> x:inner
              ) {
 
-            for (Set<String> m:list2
+            for (Set<String> m:inner
                  ) {
                 Set<String> tmp = new HashSet<>(x);
                 if(!tmp.equals(m)) {
                     tmp.retainAll(m);
                     if (!tmp.isEmpty()) {
-                        mutGraph.put(tmp, x);
-                        mutGraph.put(tmp, m);
+                        pairs.add(new Pair<Set<String>, Set<String>>(tmp,m));
+                        pairs.add(new Pair<Set<String>, Set<String>>(tmp,x));
                         //System.out.println(mutGraph.size());
                     }
                 }
@@ -123,13 +126,26 @@ public class Task3 {
 
         }
 
+        System.out.println(pairs.size());
 
+        inner.clear();
+        for (Pair<Set<String>, Set<String>> pair:pairs
+                ) {
+
+            inner.add(pair.getFirst());
+            other.add(pair.getSecond());
+
+        }
+        inner.removeAll(other);
+        System.out.println(inner.toArray()[0].toString());
         PrintWriter printWriter = new PrintWriter(new File("../bootcamp/task3/output.txt"));
 
-        for (Map.Entry<Set<String>, Set<String>> entry : mutGraph.entrySet())
-        {
-            printWriter.write(entry.getKey().hashCode() + " " + entry.getValue().hashCode() + "\t\n");
+        for (Pair<Set<String>, Set<String>> pair:pairs
+             ) {
+
+            printWriter.write(pair.getFirst().hashCode() + " " + pair.getSecond().hashCode() + "\t\n");
             printWriter.flush();
+
         }
 
 
